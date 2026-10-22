@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0b1020" />
     <title>汕头 2 天旅行手册</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
     <style>
       :root {
         --bg: #f4f7fb;
@@ -50,12 +56,15 @@
         margin: 0;
         min-height: 100vh;
         color: var(--text);
-        background: linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+        background:
+          radial-gradient(circle at top left, rgba(96,165,250,0.16), transparent 24%),
+          radial-gradient(circle at top right, rgba(245,158,11,0.12), transparent 22%),
+          linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
         transition: background .35s ease, color .35s ease;
       }
       .container {
-        max-width: 980px;
+        max-width: 1080px;
         margin: 0 auto;
         padding: 18px 14px 80px;
       }
@@ -69,7 +78,7 @@
       .title {
         margin: 0;
         line-height: 1.2;
-        font-size: clamp(1.4rem, 2vw + 1rem, 2.4rem);
+        font-size: clamp(1.4rem, 2vw + 1rem, 2.8rem);
         font-weight: 900;
         letter-spacing: 0.04em;
       }
@@ -78,14 +87,14 @@
         display: inline-flex;
         align-items: center;
         gap: 7px;
-        padding: 8px 12px;
+        padding: 9px 14px;
         border-radius: 999px;
-        background: rgba(37,99,235,0.08);
+        background: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(96,165,250,0.12));
         color: var(--primary);
         border: 1px solid rgba(37,99,235,0.15);
-        font-weight: 700;
-        font-size: 0.72rem;
-        letter-spacing: 0.06em;
+        font-weight: 800;
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
       }
       .card {
@@ -99,7 +108,11 @@
       .focus-card {
         position: relative;
         overflow: hidden;
-        padding: 20px 18px 16px;
+        padding: 22px 20px 18px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.84), rgba(219,234,254,0.88));
+      }
+      body.night .focus-card {
+        background: linear-gradient(135deg, rgba(15,23,42,0.85), rgba(30,41,59,0.9));
       }
       .focus-card::before {
         content: "";
@@ -169,7 +182,7 @@
       }
 
       section {
-        margin-top: 20px;
+        margin-top: 22px;
       }
       .section-title {
         margin: 0 0 12px;
@@ -179,13 +192,70 @@
       }
       .map-shell {
         padding: 12px;
+        overflow: hidden;
       }
-      .map-svg {
-        display: block;
+      .actual-map-shell {
+        background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(224,242,254,0.75));
+      }
+      body.night .actual-map-shell {
+        background: linear-gradient(180deg, rgba(15,23,42,0.82), rgba(15,23,42,0.92));
+      }
+      .map-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 6px 8px 12px;
+        flex-wrap: wrap;
+      }
+      .map-eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 0.68rem;
+        color: var(--muted);
+        font-weight: 800;
+      }
+      .map-header h3 {
+        margin: 6px 0 0;
+        font-size: clamp(1rem, 1.2vw + 0.9rem, 1.45rem);
+      }
+      .map-summary {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .map-summary span {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 8px 12px;
+        background: rgba(37,99,235,0.08);
+        border: 1px solid rgba(37,99,235,0.18);
+        color: var(--primary);
+        font-weight: 800;
+        font-size: 0.72rem;
+      }
+      #route-map {
         width: 100%;
-        height: auto;
+        height: 420px;
         border-radius: 18px;
-        background: radial-gradient(circle at 35% 20%, rgba(96,165,250,0.10), transparent 35%);
+        overflow: hidden;
+        border: 1px solid var(--line);
+      }
+      .leaflet-container {
+        background: #dfeefb;
+        font: inherit;
+      }
+      .leaflet-popup-content-wrapper,
+      .leaflet-popup-tip {
+        background: rgba(15, 23, 42, 0.92);
+        color: #f8fbff;
+      }
+      .leaflet-popup-content {
+        margin: 12px 14px;
+        line-height: 1.5;
+        font-size: 0.82rem;
       }
       .route-day {
         fill: none;
@@ -397,6 +467,7 @@
         .facts-grid { grid-template-columns: 1fr; }
         .countdown-wrap { grid-template-columns: repeat(2, minmax(90px,1fr)); }
         .day-header { align-items: flex-start; flex-direction: column; }
+        #route-map { height: 320px; }
       }
     </style>
   </head>
@@ -437,56 +508,18 @@
 
       <section>
         <h2 class="section-title">行程总览地图</h2>
-        <div class="card map-shell">
-          <svg class="map-svg" viewBox="0 0 900 440" role="img" aria-label="旅行线路地图">
-            <defs>
-              <linearGradient id="g1" x1="0" x2="1">
-                <stop offset="0%" stop-color="#3b82f6"/>
-                <stop offset="100%" stop-color="#60a5fa"/>
-              </linearGradient>
-              <linearGradient id="g2" x1="0" x2="1">
-                <stop offset="0%" stop-color="#f59e0b"/>
-                <stop offset="100%" stop-color="#fbbf24"/>
-              </linearGradient>
-              <linearGradient id="g3" x1="0" x2="1">
-                <stop offset="0%" stop-color="#10b981"/>
-                <stop offset="100%" stop-color="#34d399"/>
-              </linearGradient>
-            </defs>
-
-            <path d="M120 175 C 200 160, 255 120, 330 125 S 450 165, 550 150 S 670 120, 760 210 S 820 340, 855 355" fill="none" stroke="url(#g1)" class="route-day" stroke-dasharray="10 12"/>
-            <path d="M330 125 C 360 175, 410 210, 470 255 S 560 350, 612 330 S 705 260, 760 238" fill="none" stroke="url(#g2)" class="route-day"/>
-            <path d="M612 330 C 590 290, 580 215, 620 188 S 695 255, 715 280" fill="none" stroke="url(#g3)" class="route-day" stroke-dasharray="8 10"/>
-
-            <g>
-              <circle cx="120" cy="175" r="10" fill="#ffffff" class="route-marker"/>
-              <circle cx="120" cy="175" r="6" fill="#3b82f6"/>
-              <text x="105" y="200" class="route-label">梅州</text>
-
-              <circle cx="330" cy="125" r="10" fill="#ffffff" class="route-marker"/>
-              <circle cx="330" cy="125" r="6" fill="#3b82f6"/>
-              <text x="290" y="104" class="route-label">汕头市区</text>
-
-              <circle cx="612" cy="330" r="10" fill="#ffffff" class="route-marker"/>
-              <circle cx="612" cy="330" r="6" fill="#f59e0b"/>
-              <text x="545" y="365" class="route-label">南澳岛</text>
-
-              <circle cx="760" cy="238" r="10" fill="#ffffff" class="route-marker"/>
-              <circle cx="760" cy="238" r="6" fill="#10b981"/>
-              <text x="725" y="220" class="route-label">万象城</text>
-            </g>
-
-            <g>
-              <rect x="120" y="245" width="140" height="32" rx="12" fill="rgba(59,130,246,0.12)" stroke="rgba(59,130,246,0.20)"/>
-              <text x="136" y="266" class="route-stamp">DAY 1：梅州 → 汕头</text>
-
-              <rect x="420" y="205" width="170" height="32" rx="12" fill="rgba(245,158,11,0.12)" stroke="rgba(245,158,11,0.20)"/>
-              <text x="438" y="226" class="route-stamp">DAY 2：中海 + 南澳岛</text>
-
-              <rect x="610" y="260" width="150" height="32" rx="12" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.20)"/>
-              <text x="628" y="281" class="route-stamp">DAY 3：万象城 → 梅州</text>
-            </g>
-          </svg>
+        <div class="card map-shell actual-map-shell">
+          <div class="map-header">
+            <div>
+              <div class="map-eyebrow">Travel route</div>
+              <h3>汕头 · 南澳岛 · 中海黄金海岸</h3>
+            </div>
+            <div class="map-summary">
+              <span>2 天 1 晚</span>
+              <span>海岸线路</span>
+            </div>
+          </div>
+          <div id="route-map" aria-label="汕头与南澳实际地图"></div>
         </div>
       </section>
 
@@ -527,7 +560,7 @@
             </div>
           </div>
           <div id="day-1" class="day-map-panel">
-            <svg class="map-svg" viewBox="0 0 560 160" style="margin-top:10px;">
+            <svg class="map-svg" viewBox="0 0 560 160" style="margin-top:10px; width:100%; height:auto; display:block; border-radius:18px; background: radial-gradient(circle at 35% 20%, rgba(96,165,250,0.10), transparent 35%);">
               <path d="M30 110 C 130 100, 180 80, 250 80 S 400 100, 520 80" fill="none" stroke="#3b82f6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
               <circle cx="30" cy="110" r="8" fill="#3b82f6"/>
               <circle cx="250" cy="80" r="8" fill="#3b82f6"/>
@@ -583,7 +616,7 @@
             </div>
           </div>
           <div id="day-2" class="day-map-panel">
-            <svg class="map-svg" viewBox="0 0 560 170" style="margin-top:10px;">
+            <svg class="map-svg" viewBox="0 0 560 170" style="margin-top:10px; width:100%; height:auto; display:block; border-radius:18px; background: radial-gradient(circle at 35% 20%, rgba(96,165,250,0.10), transparent 35%);">
               <path d="M20 114 C 120 106, 150 88, 240 94 S 370 118, 410 86 S 500 62, 520 40" fill="none" stroke="#f59e0b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M410 86 C 390 84, 360 105, 330 125 S 280 162, 242 150" fill="none" stroke="#10b981" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
               <circle cx="20" cy="114" r="8" fill="#f59e0b"/>
@@ -713,7 +746,7 @@
             </div>
           </div>
           <div id="day-3" class="day-map-panel">
-            <svg class="map-svg" viewBox="0 0 560 150" style="margin-top:10px;">
+            <svg class="map-svg" viewBox="0 0 560 150" style="margin-top:10px; width:100%; height:auto; display:block; border-radius:18px; background: radial-gradient(circle at 35% 20%, rgba(96,165,250,0.10), transparent 35%);">
               <path d="M30 92 L 220 92 L 350 96 L 520 82" fill="none" stroke="#10b981" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
               <circle cx="30" cy="92" r="8" fill="#10b981"/>
               <circle cx="220" cy="92" r="8" fill="#10b981"/>
@@ -792,7 +825,7 @@
           <ul class="todo-list">
             <li class="todo-item"><span class="dot"></span><span>确认并补充酒店区域、入住时间、地址和电话；当前页面保留“待定”字段，避免暴露敏感信息。</span></li>
             <li class="todo-item"><span class="dot"></span><span>在“南澳畅行”小程序预约南澳岛入岛，确认成功后保留截图；这是本次最关键的提前准备。</span></li>
-            <li class="todo-item"><span class="dot"></span><span>确认中海黄金海岸是否开放水上乐园、��业时间和电话 0754-88762688，避免白跑。</span></li>
+            <li class="todo-item"><span class="dot"></span><span>确认中海黄金海岸是否开放水上乐园、营业时间和电话 0754-88762688，避免白跑。</span></li>
             <li class="todo-item"><span class="dot"></span><span>核对租车取还车点、车程时间和加油停车安排，给返回梅州预留足够缓冲。</span></li>
             <li class="todo-item"><span class="dot"></span><span>确认热门时段、海鲜排档、周末景点是否存在票务售罄风险，必要时提前改路线分流。</span></li>
           </ul>
@@ -813,6 +846,11 @@
       </section>
     </div>
 
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
     <script>
       (function () {
         const target = new Date('2026-10-30T22:00:00+08:00');
@@ -844,6 +882,54 @@
 
         const hour = new Date().getHours();
         document.body.classList.toggle('night', hour < 6 || hour >= 18);
+
+        function initMap() {
+          if (!window.L || !document.getElementById('route-map')) return;
+
+          const map = L.map('route-map', {
+            zoomControl: true,
+            attributionControl: true,
+            scrollWheelZoom: true,
+            dragging: true
+          }).setView([23.41, 116.72], 10);
+
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap 贡献者'
+          }).addTo(map);
+
+          const routePoints = [
+            [23.357, 116.695],
+            [23.382, 116.718],
+            [23.412, 116.741],
+            [23.47, 116.82],
+            [23.55, 116.99]
+          ];
+
+          const route = L.polyline(routePoints, {
+            color: '#2563eb',
+            weight: 5,
+            opacity: 0.9,
+            dashArray: '10, 12'
+          }).addTo(map);
+
+          const city1 = L.circleMarker([23.357, 116.695], { radius: 9, color: '#ffffff', weight: 2, fillColor: '#3b82f6', fillOpacity: 1 }).addTo(map);
+          const city2 = L.circleMarker([23.412, 116.741], { radius: 9, color: '#ffffff', weight: 2, fillColor: '#f59e0b', fillOpacity: 1 }).addTo(map);
+          const city3 = L.circleMarker([23.55, 116.99], { radius: 9, color: '#ffffff', weight: 2, fillColor: '#10b981', fillOpacity: 1 }).addTo(map);
+
+          city1.bindPopup('<strong>汕头市区</strong><br>酒店 / 夜宵区');
+          city2.bindPopup('<strong>中海黄金海岸</strong><br>海滩与滨海步道');
+          city3.bindPopup('<strong>南澳岛</strong><br>青澳湾 · 长山尾灯塔');
+
+          const bounds = L.latLngBounds(routePoints);
+          map.fitBounds(bounds.pad(0.28));
+
+          setTimeout(function () {
+            map.invalidateSize();
+          }, 120);
+        }
+
+        initMap();
 
         function openMap(place) {
           const text = encodeURIComponent(place || '');
