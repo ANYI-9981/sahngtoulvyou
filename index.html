@@ -238,7 +238,8 @@
       }
       #route-map {
         width: 100%;
-        height: 420px;
+        height: clamp(280px, 54vw, 420px);
+        min-height: 280px;
         border-radius: 18px;
         overflow: hidden;
         border: 1px solid var(--line);
@@ -295,7 +296,12 @@
       }
       #nav-map {
         flex: 1;
-        min-height: 340px;
+        min-height: 300px;
+        height: 100%;
+      }
+      #nav-map-instance {
+        width: 100%;
+        height: 100%;
       }
       .leaflet-container {
         background: #dfeefb;
@@ -521,7 +527,8 @@
         .facts-grid { grid-template-columns: 1fr; }
         .countdown-wrap { grid-template-columns: repeat(2, minmax(90px,1fr)); }
         .day-header { align-items: flex-start; flex-direction: column; }
-        #route-map { height: 320px; }
+        #route-map { height: 300px; min-height: 300px; }
+        .nav-sheet { height: min(78vh, 680px); }
       }
     </style>
   </head>
@@ -973,7 +980,8 @@
             zoomControl: true,
             attributionControl: true,
             scrollWheelZoom: true,
-            dragging: true
+            dragging: true,
+            tap: true
           }).setView([23.41, 116.72], 10);
 
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1009,7 +1017,10 @@
 
           setTimeout(function () {
             map.invalidateSize();
-          }, 120);
+          }, 250);
+          window.addEventListener('resize', function () {
+            map.invalidateSize();
+          });
         }
 
         initMap();
@@ -1040,7 +1051,9 @@
           const navMap = L.map('nav-map-instance', {
             zoomControl: true,
             attributionControl: true,
-            scrollWheelZoom: true
+            scrollWheelZoom: true,
+            dragging: true,
+            tap: true
           }).setView([23.36, 116.69], 12);
 
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1052,38 +1065,44 @@
           let currentPos = fallbackCurrent;
 
           function addRoute(start, end) {
-            const line = L.polyline([start, end], {
+            L.polyline([start, end], {
               color: '#2563eb',
               weight: 5,
               opacity: 0.95,
-              dashArray: '10, 10'
+              dashArray: '10,10'
             }).addTo(navMap);
-            const startMarker = L.circleMarker(start, {
+
+            L.circleMarker(start, {
               radius: 8,
               color: '#ffffff',
               weight: 2,
               fillColor: '#10b981',
               fillOpacity: 1
-            }).addTo(navMap);
-            const endMarker = L.circleMarker(end, {
+            }).addTo(navMap).bindPopup('<strong>当前位置</strong>');
+
+            L.circleMarker(end, {
               radius: 8,
               color: '#ffffff',
               weight: 2,
               fillColor: '#3b82f6',
               fillOpacity: 1
-            }).addTo(navMap);
-            startMarker.bindPopup('<strong>当前位置</strong>');
-            endMarker.bindPopup('<strong>' + targetName + '</strong>');
+            }).addTo(navMap).bindPopup('<strong>' + targetName + '</strong>');
+
             navMap.fitBounds(L.latLngBounds([start, end]).pad(0.25));
-            return line;
           }
 
           if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
               currentPos = [position.coords.latitude, position.coords.longitude];
               addRoute(currentPos, coords);
+              setTimeout(function () {
+                navMap.invalidateSize();
+              }, 150);
             }, function () {
               addRoute(fallbackCurrent, coords);
+              setTimeout(function () {
+                navMap.invalidateSize();
+              }, 150);
             }, {
               enableHighAccuracy: true,
               timeout: 8000,
@@ -1091,15 +1110,20 @@
             });
           } else {
             addRoute(fallbackCurrent, coords);
+            setTimeout(function () {
+              navMap.invalidateSize();
+            }, 150);
           }
 
           closeBtn.onclick = function () {
             overlay.classList.remove('is-open');
             overlay.setAttribute('aria-hidden', 'true');
-            setTimeout(function () {
-              if (navMap) navMap.remove();
-            }, 50);
+            navMap.remove();
           };
+
+          setTimeout(function () {
+            navMap.invalidateSize();
+          }, 200);
         }
 
         function openMap(place) {
