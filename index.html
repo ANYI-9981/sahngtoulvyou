@@ -593,7 +593,7 @@
               <div class="timeline-content">
                 <p class="timeline-title">抵达汕头市区，酒店办理入住</p>
                 <div class="timeline-meta">
-                  <span>地点：龙湖区 / 金平区酒店</span>
+                  <span>地点：龙湖区 / 金平��酒店</span>
                   <button class="small-btn copy-place" data-place="龙湖区酒店">复制导航</button>
                 </div>
               </div>
@@ -738,7 +738,7 @@
         <h2 class="section-title">实用贴士</h2>
         <div class="card tips-card">
           <ul>
-            <li>南澳岛节奏较满，建议��六尽早出发；天气恶劣时，优先保留南澳岛和海边拍照时间，减少中海景点停留。</li>
+            <li>南澳岛节奏较满，建议早六尽早出发；天气恶劣时，优先保留南澳岛和海边拍照时间，减少中海景点停留。</li>
             <li>10月下旬日落约 17:40，青澳湾看日落最适合，建议提前 15-20 分钟到位抢拍角度。</li>
             <li>不论是否买门票，都建议提前联系或确认中海黄金海岸相关活动是否开放，以免在景区门口白跑一趟。</li>
             <li>公开页面绝不写确认号、证件号、房间号等敏感信息；只有景点、地址、电话及时间安排。</li>
@@ -803,16 +803,16 @@
         }
 
         function copyNavigationText(text) {
-          const value = text || '汕头';
-          const finalText = value + '（请在导航软件中搜索该地点）';
+          const value = (text || '').trim();
+          if (!value) return;
           if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(finalText).then(function () {
-              alert('已复制：' + finalText);
+            navigator.clipboard.writeText(value).then(function () {
+              alert('已复制：' + value);
             }).catch(function () {
-              fallbackCopy(finalText);
+              fallbackCopy(value);
             });
           } else {
-            fallbackCopy(finalText);
+            fallbackCopy(value);
           }
         }
 
@@ -844,8 +844,7 @@
           button.addEventListener('click', function (event) {
             event.stopPropagation();
             const place = button.getAttribute('data-place') || button.closest('.place-item')?.getAttribute('data-name') || '汕头';
-            const info = button.closest('.place-item')?.querySelector('.place-info')?.textContent || place;
-            copyNavigationText(place + '：' + info.replace('导航信息：', ''));
+            copyNavigationText(place);
           });
         });
 
@@ -859,10 +858,8 @@
 
         document.getElementById('copyAllBtn').addEventListener('click', function () {
           const items = Array.from(document.querySelectorAll('.place-item')).map(function (node) {
-            const name = node.getAttribute('data-name');
-            const info = node.querySelector('.place-info')?.textContent || '';
-            return name + '：' + info.replace('导航信息：', '');
-          });
+            return node.getAttribute('data-name');
+          }).filter(Boolean);
           copyNavigationText(items.join('\n'));
         });
 
