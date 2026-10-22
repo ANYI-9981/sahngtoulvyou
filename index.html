@@ -243,6 +243,60 @@
         overflow: hidden;
         border: 1px solid var(--line);
       }
+      .map-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(10px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 18px;
+      }
+      .map-overlay.is-open {
+        display: flex;
+      }
+      .nav-sheet {
+        width: min(980px, 100%);
+        height: min(86vh, 760px);
+        background: rgba(255,255,255,0.92);
+        border: 1px solid rgba(148,163,184,0.25);
+        border-radius: 24px;
+        box-shadow: 0 18px 52px rgba(15, 23, 42, 0.24);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      body.night .nav-sheet {
+        background: rgba(15, 23, 42, 0.94);
+      }
+      .nav-sheet-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 18px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .nav-sheet-header h3 {
+        margin: 0;
+        font-size: 1.08rem;
+      }
+      .close-nav {
+        appearance: none;
+        border: 1px solid var(--line);
+        background: rgba(37,99,235,0.08);
+        color: var(--primary);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      #nav-map {
+        flex: 1;
+        min-height: 340px;
+      }
       .leaflet-container {
         background: #dfeefb;
         font: inherit;
@@ -846,6 +900,16 @@
       </section>
     </div>
 
+    <div class="map-overlay" id="nav-overlay" aria-hidden="true">
+      <div class="nav-sheet">
+        <div class="nav-sheet-header">
+          <h3 id="nav-title">导航路线</h3>
+          <button class="close-nav" id="close-nav">关闭</button>
+        </div>
+        <div id="nav-map" aria-label="导航路线地图"></div>
+      </div>
+    </div>
+
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -854,6 +918,25 @@
     <script>
       (function () {
         const target = new Date('2026-10-30T22:00:00+08:00');
+
+        const placeCoords = {
+          '梅州': [24.304, 116.121],
+          '汕头市区': [23.354, 116.679],
+          '龙湖区酒店': [23.368, 116.708],
+          '龙眼南路美食街': [23.365, 116.719],
+          '中海黄金海岸': [23.420, 116.752],
+          '南澳岛青澳湾': [23.509, 117.035],
+          '长山尾灯塔': [23.548, 117.025],
+          '青澳湾': [23.525, 117.051],
+          '青澳湾海鲜排档': [23.522, 117.047],
+          '汕头万象城': [23.345, 116.665],
+          '酒店': [23.365, 116.708],
+          '南澳岛': [23.56, 117.02],
+          '万象城': [23.345, 116.665],
+          '中信大道': [23.425, 116.742],
+          '贝沙湾': [23.516, 117.037],
+          '长平路': [23.355, 116.683]
+        };
 
         function updateCountdown() {
           const now = new Date();
@@ -931,6 +1014,94 @@
 
         initMap();
 
+        function showNavigationOverlay(place) {
+          const targetName = place || '汕头市区';
+          const coords = placeCoords[targetName] || [23.354, 116.679];
+          const overlay = document.getElementById('nav-overlay');
+          const title = document.getElementById('nav-title');
+          const closeBtn = document.getElementById('close-nav');
+
+          title.textContent = '导航：' + targetName;
+          overlay.classList.add('is-open');
+          overlay.setAttribute('aria-hidden', 'false');
+
+          const existing = document.getElementById('nav-map-instance');
+          if (existing) {
+            existing.remove();
+          }
+
+          const mapContainer = document.getElementById('nav-map');
+          const fakeMap = document.createElement('div');
+          fakeMap.id = 'nav-map-instance';
+          fakeMap.style.width = '100%';
+          fakeMap.style.height = '100%';
+          mapContainer.appendChild(fakeMap);
+
+          const navMap = L.map('nav-map-instance', {
+            zoomControl: true,
+            attributionControl: true,
+            scrollWheelZoom: true
+          }).setView([23.36, 116.69], 12);
+
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap 贡献者'
+          }).addTo(navMap);
+
+          const fallbackCurrent = [23.350, 116.685];
+          let currentPos = fallbackCurrent;
+
+          function addRoute(start, end) {
+            const line = L.polyline([start, end], {
+              color: '#2563eb',
+              weight: 5,
+              opacity: 0.95,
+              dashArray: '10, 10'
+            }).addTo(navMap);
+            const startMarker = L.circleMarker(start, {
+              radius: 8,
+              color: '#ffffff',
+              weight: 2,
+              fillColor: '#10b981',
+              fillOpacity: 1
+            }).addTo(navMap);
+            const endMarker = L.circleMarker(end, {
+              radius: 8,
+              color: '#ffffff',
+              weight: 2,
+              fillColor: '#3b82f6',
+              fillOpacity: 1
+            }).addTo(navMap);
+            startMarker.bindPopup('<strong>当前位置</strong>');
+            endMarker.bindPopup('<strong>' + targetName + '</strong>');
+            navMap.fitBounds(L.latLngBounds([start, end]).pad(0.25));
+            return line;
+          }
+
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+              currentPos = [position.coords.latitude, position.coords.longitude];
+              addRoute(currentPos, coords);
+            }, function () {
+              addRoute(fallbackCurrent, coords);
+            }, {
+              enableHighAccuracy: true,
+              timeout: 8000,
+              maximumAge: 120000
+            });
+          } else {
+            addRoute(fallbackCurrent, coords);
+          }
+
+          closeBtn.onclick = function () {
+            overlay.classList.remove('is-open');
+            overlay.setAttribute('aria-hidden', 'true');
+            setTimeout(function () {
+              if (navMap) navMap.remove();
+            }, 50);
+          };
+        }
+
         function openMap(place) {
           const text = encodeURIComponent(place || '');
           const amap = 'https://m.amap.com/search?query=' + text;
@@ -950,9 +1121,15 @@
           }
         }
 
+        document.getElementById('close-nav').addEventListener('click', function () {
+          document.getElementById('nav-overlay').classList.remove('is-open');
+          document.getElementById('nav-overlay').setAttribute('aria-hidden', 'true');
+        });
+
         document.querySelectorAll('[data-place]').forEach(function (button) {
           button.addEventListener('click', function () {
-            openMap(button.getAttribute('data-place'));
+            const place = button.getAttribute('data-place');
+            showNavigationOverlay(place);
           });
         });
 
@@ -975,8 +1152,8 @@
               'day-3': ['汕头万象城', '酒店', '梅州']
             };
             const list = points[day] || ['汕头'];
-            const query = list.map(function (item) { return encodeURIComponent(item); }).join('/');
-            window.open('https://m.amap.com/search?query=' + query, '_blank');
+            const place = list[0] || '汕头';
+            showNavigationOverlay(place);
           });
         });
       })();
