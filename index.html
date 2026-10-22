@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b1020" />
+    <title>汕头 2 日旅行手册</title>
+    <style>
+      :root {
+        --bg: #f3f6fb;
+        --bg-2: #e9eef8;
+        --panel: rgba(255,255,255,0.85);
+        --panel-strong: #ffffff;
+        --card: rgba(255,255,255,0.9);
+        --muted: #6b7280;
+        --text: #1e2a3a;
+        --text-soft: #3d4c5f;
+        --line: rgba(30, 42, 58, 0.12);
+        --primary: #1d4ed8;
+        --primary-2: #60a5fa;
+        --accent: #f59e0b;
+        --success: #10b981;
+        --danger: #ef4444;
+        --shadow: 0 12px 30px rgba(26, 35, 51, 0.12);
+      }
+
+      body.night {
+        --bg: #0b1020;
+        --bg-2: #101827;
+        --panel: rgba(17, 24, 39, 0.88);
+        --panel-strong: rgba(17, 24, 39, 0.98);
+        --card: rgba(17, 24, 39, 0.9);
+        --muted: #94a3b8;
+        --text: #e6edf8;
+        --text-soft: #c7d2e1;
+        --line: rgba(148, 163, 184, 0.14);
+        --primary: #7cb7ff;
+        --primary-2: #60a5fa;
+        --accent: #fbbf24;
+        --success: #34d399;
+        --danger: #f87171;
+        --shadow: 0 12px 30px rgba(2, 6, 23, 0.44);
+      }
+
+      * { box-sizing: border-box; }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+        color: var(--text);
+        transition: background 0.35s ease, color 0.35s ease;
+      }
+
+      .container {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 20px 14px 80px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .title {
+        font-size: clamp(1.5rem, 2vw + 1rem, 2.3rem);
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        margin: 0;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(96, 165, 250, 0.12);
+        color: var(--primary);
+        border: 1px solid rgba(96, 165, 250, 0.2);
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      .focus-card {
+        padding: 22px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .focus-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 12px;
+        background: linear-gradient(180deg, var(--primary), var(--accent));
+      }
+
+      .focus-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .kicker {
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+
+      .focus-title {
+        font-size: clamp(1.15rem, 3vw, 1.9rem);
+        font-weight: 800;
+        margin: 0;
+      }
+
+      .focus-meta {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(16, 185, 129, 0.12);
+        color: var(--success);
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1px solid rgba(16, 185, 129, 0.16);
+      }
+
+      .countdown-wrap {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(70px, 1fr));
+        gap: 12px;
+      }
+
+      .countdown-box {
+        background: linear-gradient(180deg, var(--panel-strong), rgba(96,165,250,0.08));
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 16px 8px 12px;
+        text-align: center;
+      }
+
+      .countdown-value {
+        display: block;
+        font-size: clamp(1.5rem, 2vw + 1rem, 2.4rem);
+        font-weight: 900;
+        line-height: 1;
+        color: var(--primary);
+      }
+
+      .countdown-label {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      section {
+        margin-top: 20px;
+      }
+
+      .section-title {
+        margin: 0 0 12px;
+        font-size: 1.08rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+      }
+
+      .map-shell {
+        padding: 12px;
+      }
+
+      .map-svg {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 18px;
+        background: radial-gradient(circle at 35% 20%, rgba(96,165,250,0.14), transparent 40%), rgba(255,255,255,0.06);
+      }
+
+      .route-label {
+        font-size: 12px;
+        fill: var(--text-soft);
+        font-weight: 700;
+      }
+
+      .route-stamp {
+        font-size: 11px;
+        font-weight: 700;
+        fill: var(--muted);
+      }
+
+      .route-day {
+        fill: none;
+        stroke-width: 5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        opacity: 0.95;
+      }
+
+      .route-marker {
+        stroke: rgba(255,255,255,0.85);
+        stroke-width: 3;
+      }
+
+      .facts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .fact-item {
+        padding: 16px 16px 14px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255,255,255,0.04);
+      }
+
+      .fact-label {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+
+      .fact-value {
+        font-size: 0.96rem;
+        font-weight: 700;
+        line-height: 1.5;
+      }
+
+      .fact-value small {
+        display: block;
+        color: var(--muted);
+        margin-top: 4px;
+        font-weight: 600;
+      }
+
+      .list-card {
+        padding: 8px 12px 12px;
+      }
+
+      .day-card {
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: rgba(255,255,255,0.04);
+        overflow: hidden;
+      }
+
+      .day-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(96,165,250,0.06);
+      }
+
+      .day-name {
+        font-size: 1rem;
+        font-weight: 800;
+      }
+
+      .day-mini {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .day-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .mini-btn {
+        appearance: none;
+        border: none;
+        background: rgba(29,78,216,0.1);
+        color: var(--primary);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .day-map-panel {
+        display: none;
+        padding: 0 12px 12px;
+      }
+
+      .day-map-panel.is-open {
+        display: block;
+      }
+
+      .timeline {
+        list-style: none;
+        padding: 14px 14px 8px;
+        margin: 0;
+      }
+
+      .timeline-item {
+        display: grid;
+        grid-template-columns: 96px 1fr;
+        gap: 12px;
+        padding: 12px 6px;
+        border-bottom: 1px dashed var(--line);
+      }
+
+      .timeline-item:last-child {
+        border-bottom: none;
+      }
+
+      .timeline-time {
+        font-weight: 800;
+        color: var(--primary);
+        font-size: 0.9rem;
+      }
+
+      .timeline-content {
+        min-width: 0;
+      }
+
+      .timeline-title {
+        margin: 0 0 4px;
+        font-size: 0.98rem;
+        font-weight: 800;
+      }
+
+      .timeline-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        color: var(--muted);
+        font-size: 0.72rem;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 4px 8px;
+        line-height: 1.2;
+        font-weight: 700;
+        border: 1px solid transparent;
+      }
+
+      .tag.warning {
+        background: rgba(245, 158, 11, 0.14);
+        color: #b45309;
+        border-color: rgba(245,158,11,0.2);
+      }
+
+      .tag.notice {
+        background: rgba(29,78,216,0.08);
+        color: var(--primary);
+        border-color: rgba(29,78,216,0.18);
+      }
+
+      .tag.alert {
+        background: rgba(239,68,68,0.1);
+        color: #b91c1c;
+        border-color: rgba(239,68,68,0.14);
+      }
+
+      .todo-list {
+        list-style: none;
+        margin: 0;
+        padding: 12px 8px 6px;
+      }
+
+      .todo-item {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 12px 8px;
+        border-bottom: 1px dashed var(--line);
+        font-size: 0.94rem;
+        line-height: 1.6;
+      }
+
+      .todo-item:last-child {
+        border-bottom: none;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-top: 8px;
+        background: linear-gradient(180deg, var(--primary), var(--accent));
+        flex-shrink: 0;
+      }
+
+      .tips {
+        padding: 12px 14px 14px;
+      }
+
+      .tips ul {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--text-soft);
+      }
+
+      .tips li + li {
+        margin-top: 10px;
+      }
+
+      .place-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(96,165,250,0.08);
+        border: 1px solid rgba(96,165,250,0.18);
+        color: var(--primary);
+        border-radius: 999px;
+        padding: 4px 8px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .place-badge:before {
+        content: "🧭";
+      }
+
+      .tiny-note {
+        color: var(--muted);
+        font-size: 0.74rem;
+      }
+
+      @media (max-width: 620px) {
+        .facts-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .timeline-item {
+          grid-template-columns: 1fr;
+          gap: 6px;
+        }
+
+        .day-header {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .countdown-wrap {
+          grid-template-columns: repeat(2, minmax(90px, 1fr));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <h1 class="title">汕头 2 天旅行手册</h1>
+        <span class="badge">初版草案</span>
+      </div>
+
+      <section class="card focus-card">
+        <div class="kicker">此刻关注</div>
+        <div class="focus-row">
+          <div>
+            <div class="focus-title">下一个行程事件：10月30日晚 抵达汕头</div>
+          </div>
+          <div class="focus-meta" id="next-event-label">距出发 8 天 12 小时</div>
+        </div>
+
+        <div class="countdown-wrap" aria-label="倒计时">
+          <div class="countdown-box">
+            <span class="countdown-value" id="days">00</span>
+            <span class="countdown-label">天</span>
+          </div>
+          <div class="countdown-box">
+            <span class="countdown-value" id="hours">00</span>
+            <span class="countdown-label">时</span>
+          </div>
+          <div class="countdown-box">
+            <span class="countdown-value" id="minutes">00</span>
+            <span class="countdown-label">分</span>
+          </div>
+          <div class="countdown-box">
+            <span class="countdown-value" id="seconds">00</span>
+            <span class="countdown-label">秒</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-title">行程总览地图</h2>
+        <div class="card map-shell">
+          <svg class="map-svg" viewBox="0 0 900 430" role="img" aria-label="行程总览地图">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0%" stop-color="#3b82f6"/>
+                <stop offset="100%" stop-color="#60a5fa"/>
+              </linearGradient>
+              <linearGradient id="g2" x1="0" x2="1">
+                <stop offset="0%" stop-color="#f59e0b"/>
+                <stop offset="100%" stop-color="#fbbf24"/>
+              </linearGradient>
+              <linearGradient id="g3" x1="0" x2="1">
+                <stop offset="0%" stop-color="#10b981"/>
+                <stop offset="100%" stop-color="#34d399"/>
+              </linearGradient>
+            </defs>
+
+            <path d="M120 160 C 220 180, 220 90, 330 120 S 470 180, 560 150 S 660 120, 710 200 S 800 340, 820 360" fill="none" stroke="url(#g1)" class="route-day" stroke-dasharray="12 12"/>
+            <path d="M330 120 C 340 170, 380 220, 430 260 S 520 350, 590 330 S 670 240, 740 220" fill="none" stroke="url(#g2)" class="route-day"/>
+            <path d="M550 330 C 520 280, 520 195, 570 180 S 630 240, 630 280" fill="none" stroke="url(#g3)" class="route-day" stroke-dasharray="8 8"/>
+
+            <g>
+              <circle cx="120" cy="160" r="10" fill="#ffffff" class="route-marker"/>
+              <circle cx="120" cy="160" r="6" fill="#3b82f6"/>
+              <text x="110" y="185" class="route-label">梅州</text>
+
+              <circle cx="330" cy="120" r="10" fill="#ffffff" class="route-marker"/>
+              <circle cx="330" cy="120" r="6" fill="#3b82f6"/>
+              <text x="292" y="102" class="route-label">汕头市区</text>
+
+              <circle cx="590" cy="330" r="10" fill="#ffffff" class="route-marker"/>
+              <circle cx="590" cy="330" r="6" fill="#f59e0b"/>
+              <text x="520" y="360" class="route-label">南澳岛</text>
+
+              <circle cx="740" cy="220" r="10" fill="#ffffff" class="route-marker"/>
+              <circle cx="740" cy="220" r="6" fill="#10b981"/>
+              <text x="715" y="205" class="route-label">万象城</text>
+            </g>
+
+            <g>
+              <rect x="110" y="225" width="132" height="34" rx="12" fill="rgba(59,130,246,0.10)" stroke="rgba(59,130,246,0.22)"/>
+              <text x="126" y="247" class="route-stamp">DAY 1：梅州 → 汕头市区</text>
+
+              <rect x="390" y="200" width="145" height="34" rx="12" fill="rgba(245,158,11,0.10)" stroke="rgba(245,158,11,0.22)"/>
+              <text x="410" y="222" class="route-stamp">DAY 2：中海 + 南澳岛</text>
+
+              <rect x="610" y="250" width="132" height="34" rx="12" fill="rgba(16,185,129,0.10)" stroke="rgba(16,185,129,0.22)"/>
+              <text x="628" y="272" class="route-stamp">DAY 3：万象城 → 梅州</text>
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-title">已确认的机票 / 租车 / 酒店 / 门票</h2>
+        <div class="facts-grid">
+          <div class="fact-item card">
+            <span class="fact-label">订票信息</span>
+            <div class="fact-value">机票：待补充<br />出发：梅州 → 汕头（待核对）<small>以实际出票时间为准，按时间重排行程</small></div>
+          </div>
+          <div class="fact-item card">
+            <span class="fact-label">租车</span>
+            <div class="fact-value">10月30日晚出发前取车<br />10月31日/11月1日返程前还车<small>需确认取还车地点、车行电话</small></div>
+          </div>
+          <div class="fact-item card">
+            <span class="fact-label">酒店</span>
+            <div class="fact-value">酒店地区待定<br />预计入住：10月30日夜 / 10月31日夜<small>后续补充地址、电话、入住时间</small></div>
+          </div>
+          <div class="fact-item card">
+            <span class="fact-label">门票</span>
+            <div class="fact-value">中海黄金海岸：视开放情况<br />南澳岛：需预约“南澳畅行”<small>门票/预约状态需按实际发票更新</small></div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-title">逐日行程</h2>
+        <div class="list-card card">
+          <div class="day-card">
+            <div class="day-header">
+              <div>
+                <div class="day-name">第 1 天 · 10月30日（抵达 + 市区）</div>
+                <div class="day-mini">梅州 → 汕头市区 · 酒店待定</div>
+              </div>
+              <div class="day-controls">
+                <button class="mini-btn" data-target="day-1">展开路线地图</button>
+                <button class="mini-btn" data-nav="day-1">全天多点导航</button>
+              </div>
+            </div>
+
+            <div id="day-1" class="day-map-panel">
+              <svg class="map-svg" viewBox="0 0 560 180" style="margin-top:10px;">
+                <path d="M30 120 C 120 110, 150 50, 250 90 S 360 120, 500 90" fill="none" stroke="#3b82f6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="30" cy="120" r="8" fill="#3b82f6"/>
+                <circle cx="250" cy="90" r="8" fill="#3b82f6"/>
+                <circle cx="500" cy="90" r="8" fill="#3b82f6"/>
+                <text x="10" y="148" class="route-label">梅州</text>
+                <text x="215" y="72" class="route-label">汕头市区</text>
+                <text x="468" y="112" class="route-label">酒店</text>
+              </svg>
+            </div>
+
+            <ul class="timeline">
+              <li class="timeline-item">
+                <div class="timeline-time">22:00-22:30</div>
+                <div class="timeline-content">
+                  <p class="timeline-title">抵达汕头市区，办理入住</p>
+                  <div class="timeline-meta">
+                    <span>地点：龙湖区 / 金平区酒店</span>
+                    <button class="place-badge" data-place="龙湖区酒店">导航</button>
+                  </div>
+                </div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-time">22:30-23:30</div>
+                <div class="timeline-content">
+                  <p class="timeline-title">潮汕夜宵：夜粥打冷 / 牛肉粿条 / 生腌</p>
+                  <div class="timeline-meta">
+                    <span>地点：龙眼南路 / 长平路一带</span>
+                    <button class="place-badge" data-place="龙眼南路美食街">导航</button>
+                    <span class="tag warning">建议提前问清口味</span>
+                  </div>
+                </div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-time">23:30</div>
+                <div class="timeline-content">
+                  <p class="timeline-title">回酒店休息</p>
+                  <div class="timeline-meta">
+                    <span class="tag notice">明日必须预约“南澳畅行”</span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="day-card" style="margin-top: 16px;">
+            <div class="day-header">
+              <div>
+                <div class="day-name">第 2 天 · 10月31日（中海 + 南澳岛）</div>
+                <div class="day-mini">早出发，天数满，需提前预约</div>
+              </div>
+              <div class="day-controls">
+                <button class="mini-btn" data-target="day-2">展开路线地图</button>
+                <button class="mini-btn" data-nav="day-2">全天多点导航</button>
+              </div>
+            </div>
+
+            <div id="day-2" class="day-map-panel">
+              <svg class="map-svg" viewBox="0 0 560 180" style="margin-top:10px;">
+                <path d="M30 120 C 120 110, 150 90, 240 95 S 350 120, 400 90 S 500 60, 520 40" fill="none" stroke="#f59e0b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M390 90 C 360 90, 330 110, 300 130 S 260 160, 240 150" fill="none" stroke="#10b981" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="30" cy="120" r="8" fill="#f59e0b"/>
+                <circle cx="240" cy="95" r="8" fill="#f59e0b"/>
+                <circle cx="390" cy="90" r="8" fill="#10b981"/>
+                <circle cx="240" cy="150" r="8" fill="#10b981"/>
+                <text x="14" y="146" class="route-label">中海黄金海岸</text>
+                <text x="220" y="78" class="route-label">南澳岛</text>
+                <text x="200" y="170" class="route-label">青澳湾</text>
+              </svg>
+            </div>
+
+            <ul class="timeline">
+              <li class="timeline-item">
+                <div class="timeline-time">07:30-08:00</div>
+                <div class="timeline-content">
+                  <p class="timeline-title">起床、早餐</p>
+                  <div class="timeline-meta">
+                    <span>地点：酒店附近</span>
+                    <span class="tag notice">推荐本地肠粉 / 粿条汤</span>
+                  </div>
+                </div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-time">08:00-12:00</div>
+                <div class="timeline-content">
+                  <p class="timeline-title">中海黄金海岸：黄金沙滩 + 滨海栈道 + 教堂拍照</p>
+                  <div class="timeline-meta">
+                    <span>地点：中海黄金海岸</span>
+                    <button class="place-badge" data-place="中海黄金海岸">导航</button>
+                    <span class="tag warning">水上乐园按季节开放，建议提前确认</span>
+                  </div>
+                </div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-time">13:00-19:00</div>
+                <div class="timeline-content">
+                  <p class="timeline-title">驱车前往南澳岛，环岛玩海景和日落</p>
+                  <div class="timeline-meta">
+                    <span>地点：长山尾灯塔 / 青澳湾 / 北回归线广场</span>
+                    <button class="place-badge" data-place="南澳岛青澳湾">导航</button>
+                    <span class="tag alert">南澳畅行预约必做，不预约可能无法上岛</span>
+                  </div>
+                </div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-time">18:00-20:30</div>
+                <div class="timeline-content">
+                  <p class="timeline-title">晚餐 + 回市区酒店</p>
+                  <div class="timeline-meta">
+                    <span>地点：青澳湾海鲜排档 / 酒店附近</span>
+                    <button class="place-badge" data-place="青澳湾海鲜排档">导航</button>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="day-card" style="margin-top: 16px;">
+            <div class="day-header">
+              <div>
+                <div class="day-name">第 3 天 · 11月1日（万象城 + 返回梅州）</div>
+                <div class="day-mini">购物 + 停车 + 返程，需留足时间</div>
+              </div>
+              <div class="day-controls">
+                <button class="mini-btn" data-target="day-3">展开路线地图</button>
+                <button class="mini-btn" data-nav="day-3">全天多点导航</button>
+              </div>
+            </div>
+
+            <div id="day-3" class="day-map-panel">
+              <svg class="map-svg" viewBox="0 0 560 180" style="margin-top:10px;">
+                <path d="M30 90 L 220 90 L 350 95 L 500 80" fill="none" stroke="#10b981" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="30" cy="90" r="8" fill="#10b981"/>
+                <circle cx="220" cy="90" r="8" fill="#10b981"/>
+                <circle cx="350" cy="95" r="8" fill="#10b981"/>
+                <circle cx="500" cy="80" r="8" fill="#10b981"/>
+                <text x="10" y="120" class="route-label">酒店</text>
+                <text x="180" y="75" class="route-label">万象城</text>
+                <text x="442" y="106" class="route-label">梅州</text>
+              </svg>
+            </div>
+
+            <ul class="timeline">
+              <li class="timeline-item">
+                <div class="timeline-time">08:30-09:30</div>
+                <div class="timeline-content">
+                  <p class="timeline-title">早餐、退房、整理行李</p>
+                  <div class="timeline-meta">
+                    <span>地点：酒店附近</span>
+                    <span class="tag notice">建议早餐后直接退房</span>
+                  </div>
+                </div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-time">10:00-16:30</div>
+                <div class="timeline-content">
+                  <p class="timeline-title">万象城逛街、购物、买手信</p>
+                  <div class="timeline-meta">
+                    <span>地点：汕头万象城</span>
+                    <button class="place-badge" data-place="汕头万象城">导航</button>
+                    <span class="tag warning">周末人多，建议适度安排</span>
+                  </div>
+                </div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-time">16:30-18:00</div>
+                <div class="timeline-content">
+                  <p class="timeline-title">取车、加油、返程出发</p>
+                  <div class="timeline-meta">
+                    <span>地点：万象城停车场</span>
+                    <span class="tag alert">返程前务必留足时间，不拖到 18:00 之后</span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-title">待办清单</h2>
+        <div class="card list-card">
+          <ul class="todo-list">
+            <li class="todo-item"><span class="dot"></span><span>确认酒店区域与入住时间，具体到地址和联系电话；待定时保留字段，后续替换。</span></li>
+            <li class="todo-item"><span class="dot"></span><span>在“南澳畅行”小程序提前预约南澳岛入岛，确认预约成功并保留截图；这是本次最关键的提前准备。</span></li>
+            <li class="todo-item"><span class="dot"></span><span>确认中海黄金海岸周末是否开放水上乐园、营业时间及电话 0754-88762688，避免白跑。</span></li>
+            <li class="todo-item"><span class="dot"></span><span>确认租车取车/还车地点、车行电话、是否需要提前预订；留出返程加油和停车时间。</span></li>
+            <li class="todo-item"><span class="dot"></span><span>核对是否存在节假日票务售罄风险：海鲜大排档、热门景点、网红打卡点等提前同意路线分流。</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-title">实用贴士</h2>
+        <div class="card tips">
+          <ul>
+            <li>南澳岛属于较强节奏路线，周六早出发更稳；如天气不好，优先保留南澳岛与海边拍照时间，减少中海景点等待。</li>
+            <li>10月下旬日落约 17:40，青澳湾看日落最适合；若拍照需要留出 15-20 分钟提前占位。</li>
+            <li>无论是否买门票，都建议提前电话确认：中海黄金海岸相关活动是否开放、是否需预约，避免在景区门口踩空。</li>
+            <li>在一切公开页面里，绝不写确认号、证件号、房间号；仅保留景点/地址/电话和时间安排。</li>
+            <li>如果有地点路线导航需求，可直接点击页面中的导航按钮，系统会尝试调用高德地图或打开地图搜索页。</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        const tripDate = new Date('2026-10-30T22:00:00+08:00');
+        const dayNames = ['days', 'hours', 'minutes', 'seconds'];
+
+        function updateCountdown() {
+          const now = new Date();
+          let diff = tripDate.getTime() - now.getTime();
+          if (diff <= 0) {
+            diff = 0;
+          }
+
+          const totalSeconds = Math.floor(diff / 1000);
+          const days = Math.floor(totalSeconds / 86400);
+          const hours = Math.floor((totalSeconds % 86400) / 3600);
+          const minutes = Math.floor((totalSeconds % 3600) / 60);
+          const seconds = totalSeconds % 60;
+
+          document.getElementById('days').textContent = String(days).padStart(2, '0');
+          document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+          document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+          document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+
+          const eventLabel = diff <= 0 ? '旅行已开始' : '距出发 ' + days + ' 天 ' + hours + ' 小时';
+          document.getElementById('next-event-label').textContent = eventLabel;
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        const hour = new Date().getHours();
+        const nightMode = hour < 6 || hour >= 18;
+        document.body.classList.toggle('night', nightMode);
+
+        function openMap(place) {
+          const query = encodeURIComponent(place);
+          const amapUrl = 'https://m.amap.com/search?query=' + query;
+          const amapIntent = 'androidamap://keywordNavi?sourceApplication=travel&keyword=' + query;
+
+          try {
+            const anchor = document.createElement('a');
+            anchor.href = amapIntent;
+            anchor.style.display = 'none';
+            document.body.appendChild(anchor);
+            anchor.click();
+            setTimeout(function () {
+              window.open(amapUrl, '_blank');
+            }, 200);
+          } catch (error) {
+            window.open(amapUrl, '_blank');
+          }
+        }
+
+        document.querySelectorAll('[data-place]').forEach(function (button) {
+          button.addEventListener('click', function () {
+            openMap(button.getAttribute('data-place'));
+          });
+        });
+
+        document.querySelectorAll('[data-target]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            const panel = document.getElementById(btn.getAttribute('data-target'));
+            if (!panel) return;
+            panel.classList.toggle('is-open');
+            btn.textContent = panel.classList.contains('is-open') ? '收起路线地图' : '展开路线地图';
+          });
+        });
+
+        document.querySelectorAll('[data-nav]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            const day = btn.getAttribute('data-nav');
+            const navList = {
+              'day-1': ['梅州', '汕头市区', '龙湖区酒店', '龙眼南路美食街'],
+              'day-2': ['中海黄金海岸', '南澳岛青澳湾', '长山尾灯塔', '青澳湾海鲜排档'],
+              'day-3': ['汕头万象城', '酒店', '梅州']
+            };
+
+            const points = (navList[day] || []).map(function (item) { return encodeURIComponent(item); }).join('/');
+            const url = 'https://m.amap.com/search?query=' + points;
+            window.open(url, '_blank');
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
